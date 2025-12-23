@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Raf Pimi Hesaplayıcı</title>
+
+<link rel="manifest" href="manifest.json">
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  padding: 20px;
+}
+.container {
+  max-width: 420px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+label {
+  display: block;
+  margin-top: 12px;
+}
+input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+}
+.radio-group {
+  margin-top: 8px;
+}
+button {
+  margin-top: 15px;
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+}
+.result {
+  margin-top: 15px;
+  background: #eee;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 18px;
+}
+small {
+  font-size: 12px;
+  color: #555;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h2>Raf Pimi Hesaplayıcı</h2>
+
+  <label>Dolap iç yüksekliği (cm)</label>
+  <input id="H" type="number" step="0.1" value="50.3">
+
+  <label>Raf sayısı</label>
+  <input id="N" type="number" value="3">
+
+  <label>Raf türü</label>
+  <div class="radio-group">
+    <input type="radio" name="rafTuru" id="metal" checked>
+    <label for="metal">Metal Pim</label><br>
+
+    <input type="radio" name="rafTuru" id="plastik">
+    <label for="plastik">Plastik Pim</label>
+  </div>
+
+  <button onclick="hesapla()">Hesapla</button>
+
+  <div id="sonuc" class="result"></div>
+</div>
+
+<script>
+function hesapla() {
+
+  const H_cm = Number(document.getElementById("H").value);
+  const N = Number(document.getElementById("N").value);
+
+  if (N <= 0 || H_cm <= 0) {
+    document.getElementById("sonuc").innerHTML =
+      "Lütfen geçerli değerler girin.";
+    return;
+  }
+
+  const MDF = 18; // mm sabit
+  const H_mm = H_cm * 10;
+
+  let pimPayi = 0;
+
+  if (document.getElementById("metal").checked) {
+    pimPayi = N * 0.4;
+  } else {
+    pimPayi = N * 10;
+  }
+
+  const netBosluk = H_mm - (N * MDF) - pimPayi;
+  const pimAraligi_mm = netBosluk / (N + 1);
+
+  const ilkRaf_cm = Math.round((pimAraligi_mm / 10) * 10) / 10;
+
+  document.getElementById("sonuc").innerHTML =
+    `<b>İlk raf pim yüksekliği:</b><br>
+     ${ilkRaf_cm} cm<br>
+     <small>(Tabandan ölçülür)</small>`;
+}
+</script>
+</body>
+</html>
